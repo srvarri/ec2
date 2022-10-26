@@ -11,6 +11,9 @@ VPC_CIDR="10.0.0.0/16"
 SUBNET_PUBLIC_CIDR="10.0.1.0/24"
 SUBNET_PUBLIC_AZ="us-west-1a"
 SUBNET_PUBLIC_NAME="10.0.1.0 - us-west-1a"
+SUBNET_PRIVATE_CIDR="10.0.2.0/24"
+SUBNET_PRIVATE_AZ="us-west-1c"
+SUBNET_PRIVATE_NAME="10.0.2.0 - us-west-1b"
 #==============================================================================
 #   DO NOT MODIFY CODE BELOW
 #==============================================================================
@@ -48,3 +51,21 @@ aws ec2 create-tags \
   --region $AWS_REGION
 echo "  Subnet ID '$SUBNET_PUBLIC_ID' NAMED as" \
   "'$SUBNET_PUBLIC_NAME'."
+# Create Private Subnet
+echo "Creating Private Subnet..."
+SUBNET_PRIVATE_ID=$(aws ec2 create-subnet \
+  --vpc-id $VPC_ID \
+  --cidr-block $SUBNET_PRIVATE_CIDR \
+  --availability-zone $SUBNET_PRIVATE_AZ \
+  --query 'Subnet.{SubnetId:SubnetId}' \
+  --output text \
+  --region $AWS_REGION)
+echo "  Subnet ID '$SUBNET_PRIVATE_ID' CREATED in '$SUBNET_PRIVATE_AZ'" \
+  "Availability Zone."
+
+# Add Name tag to Private Subnet
+aws ec2 create-tags \
+  --resources $SUBNET_PRIVATE_ID \
+  --tags "Key=Name,Value=$SUBNET_PRIVATE_NAME" \
+  --region $AWS_REGION
+echo "  Subnet ID '$SUBNET_PRIVATE_ID' NAMED as '$SUBNET_PRIVATE_NAME'."
