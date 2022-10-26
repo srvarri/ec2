@@ -69,3 +69,43 @@ aws ec2 create-tags \
   --tags "Key=Name,Value=$SUBNET_PRIVATE_NAME" \
   --region $AWS_REGION
 echo "  Subnet ID '$SUBNET_PRIVATE_ID' NAMED as '$SUBNET_PRIVATE_NAME'."
+# Create Internet gateway
+echo "Creating Internet Gateway..."
+IGW_ID=$(aws ec2 create-internet-gateway \
+  --query 'InternetGateway.{InternetGatewayId:InternetGatewayId}' \
+  --output text \
+  --region $AWS_REGION)
+echo "  Internet Gateway ID '$IGW_ID' CREATED."
+
+# Attach Internet gateway to your VPC
+aws ec2 attach-internet-gateway \
+  --vpc-id $VPC_ID \
+  --internet-gateway-id $IGW_ID \
+  --region $AWS_REGION
+echo "  Internet Gateway ID '$IGW_ID' ATTACHED to VPC ID '$VPC_ID'."
+
+# Create Route Table
+echo "Creating Route Table..."
+ROUTE_TABLE_ID=$(aws ec2 create-route-table \
+  --vpc-id $VPC_ID \
+  --query 'RouteTable.{RouteTableId:RouteTableId}' \
+  --output text \
+  --region $AWS_REGION)
+echo "  Route Table ID '$ROUTE_TABLE_ID' CREATED."
+
+# Create route to Internet Gateway
+RESULT=$(aws ec2 create-route \
+  --route-table-id $ROUTE_TABLE_ID \
+  --destination-cidr-block 0.0.0.0/0 \
+  --gateway-id $IGW_ID \
+  --region $AWS_REGION)
+echo "  Route to '0.0.0.0/0' via Internet Gateway ID '$IGW_ID' ADDED to" \
+  "Route Table ID '$ROUTE_TABLE_ID'."
+
+# Associate Public Subnet with Route Table
+RESULT=$(aws ec2 associate-route-table  \
+  --subnet-id $SUBNET_PUBLIC_ID \
+  --route-table-id $ROUTE_TABLE_ID \
+  --region $AWS_REGION)
+echo "  Public Subnet ID '$SUBNET_PUBLIC_ID' ASSOCIATED with Route Table ID" \
+  "'$ROUTE_TABLE_ID'."
