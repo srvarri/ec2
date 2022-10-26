@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent any { label 'py3.9'}
     stages {
         stage('vcs') {
             steps {
