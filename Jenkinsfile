@@ -9,8 +9,8 @@ pipeline {
         }
         stage('call ec2') {
             steps {
-                sh 'chmod +x bin.sh'
-                sh './bin.sh'
+                sh 'chmod +x var.sh'
+                sh './var.sh'
             }
         }
     }
