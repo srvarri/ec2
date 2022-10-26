@@ -110,3 +110,33 @@ RESULT=$(aws ec2 associate-route-table  \
   --region $AWS_REGION)
 echo "  Public Subnet ID '$SUBNET_PUBLIC_ID' ASSOCIATED with Route Table ID" \
   "'$ROUTE_TABLE_ID'."
+########################################################
+  ### Creating a security group for the public instances
+pubSecGrpID=$(aws ec2 create-security-group --group-name pubSecGrp \
+            --description "Security Group for public instances" \
+            --vpc-id "$pubVPC_ID" \
+            --output text)
+			
+### Creating a security group for the private instances
+pvtSecGrpID=$(aws ec2 create-security-group --group-name pvtSecGrp \
+            --description "Security Group for private instances" \
+            --vpc-id "$pvtVPC_ID" \
+            --output text)
+#### Add a rule that allows inbound SSH, HTTP, HTTP traffic ( from any source )
+aws ec2 authorize-security-group-ingress --group-id "$pubSecGrpID" --protocol tcp --port 22 --cidr 0.0.0.0/0
+### Create two EC2 Instances
+
+##### Public Instances
+
+pubInstanceID=$(aws ec2 run-instances \
+           --image-id ami-02ea247e531eb3ce6 \
+           --count 1 \
+           --instance-type t2.micro \
+           --key-name sai.pem \
+           --security-group-ids "$pubSecGrpID" \
+           --subnet-id "$pubVPC_Subnet01ID" \
+           --associate-public-ip-address \
+           --query 'Instances[0].InstanceId' \
+           --output text)
+ ##### Tag the instanes
+aws ec2 create-tags --resources "$pubInstanceID" --tags 'Key=Name,Value=Public-Instance'                     
