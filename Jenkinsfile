@@ -15,3 +15,4 @@ pipeline {
         }
     }
 } 
+--region "us-west-1" `
