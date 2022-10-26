@@ -1,7 +1,5 @@
 pipeline {
     agent any
-    
-    
     stages {
         stage('vcs') {
             steps {
@@ -11,9 +9,9 @@ pipeline {
         }
         stage('call ec2') {
             steps {
-                sh '''chmod 777 bin.sh
-                      bin.sh'''
+                sh 'chmod 777 bin.sh'
+                sh 'bin.sh'
             }
         }
     }
-}        
+} 
