@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 #create-vpc
 aws ec2 create-vpc `
     --region "us-west-2" `
