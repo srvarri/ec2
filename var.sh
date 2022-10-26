@@ -112,20 +112,20 @@ echo "  Public Subnet ID '$SUBNET_PUBLIC_ID' ASSOCIATED with Route Table ID" \
   "'$ROUTE_TABLE_ID'."
 ########################################################
   ### Creating a security group for the public instances
-pubSecGrpID=$(aws ec2 create-security-group --group-name pubSecGrp \
+PubSecGrpID=$(aws ec2 create-security-group --group-name PubSecGrp \
             --description "Security Group for public instances" \
-            --vpc-id "$pubVPC_ID" \
+            --vpc-id "$PubVPC_ID" \
             --output text)
 			
 ### Creating a security group for the private instances
-pvtSecGrpID=$(aws ec2 create-security-group --group-name pvtSecGrp \
+PvtSecGrpID=$(aws ec2 create-security-group --group-name PvtSecGrp \
             --description "Security Group for private instances" \
-            --vpc-id "$pvtVPC_ID" \
+            --vpc-id "$PvtVPC_ID" \
             --output text)
 
 
 #### Add a rule that allows inbound SSH, HTTP, HTTP traffic ( from any source )
-aws ec2 authorize-security-group-ingress --group-id "$pubSecGrpID" --protocol tcp --port 22 --cidr 0.0.0.0/0
+aws ec2 authorize-security-group-ingress --group-id "$PubSecGrpID" --protocol tcp --port 22 --cidr 0.0.0.0/0
 
 
 ### Create two EC2 Instances
