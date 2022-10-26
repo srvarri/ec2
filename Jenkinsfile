@@ -1,5 +1,5 @@
 pipeline {
-    agent any { label 'py3.9'}
+    agent any { label 'jdk11'}
     stages {
         stage('vcs') {
             steps {
