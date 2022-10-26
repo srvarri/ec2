@@ -25,3 +25,9 @@ aws ec2 create-tags \
   --tags "Key=Name,Value=$VPC_NAME" \
   --region $AWS_REGION
 echo "  VPC ID '$VPC_ID' NAMED as '$VPC_NAME'."
+aws ec2 create-subnet `
+    --region "us-west-1" `
+    --availability-zone "us-west-1a" `
+    --vpc-id "vpc-03a5af3969245ddc4" `
+    --cidr-block "10.10.0.0/24" `
+    --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=web}]"
