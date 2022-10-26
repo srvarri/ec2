@@ -1,5 +1,5 @@
 pipeline {
-   agent { label 'jdk11' }
+   agent any
     stages {
         stage('vcs') {
             steps {
@@ -15,4 +15,3 @@ pipeline {
         }
     }
 } 
---region "us-west-1" `
