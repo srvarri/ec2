@@ -15,6 +15,12 @@ SUBNET_PUBLIC_NAME="10.0.1.0 - us-west-1a"
 SUBNET_PRIVATE_CIDR="10.0.2.0/24"
 SUBNET_PRIVATE_AZ="us-west-1c"
 SUBNET_PRIVATE_NAME="10.0.2.0 - us-west-1b"
+SEC_NAME="mysec"
+INSTANCE_NAME="myinstance"
+IMAGE_ID="ami-02ea247e531eb3ce6"
+TYPE="t2.micro"
+KEY_NAME="id_rsa"
+CHECK_FREQUENCY=5
 #==============================================================================
 #   DO NOT MODIFY CODE BELOW
 #==============================================================================
@@ -110,4 +116,56 @@ RESULT=$(aws ec2 associate-route-table  \
   --region $AWS_REGION)
 echo "  Public Subnet ID '$SUBNET_PUBLIC_ID' ASSOCIATED with Route Table ID" \
   "'$ROUTE_TABLE_ID'."
+ ###############################
+ #creating security group
+SecGrpID=$(aws ec2 create-security-group --group-name PubSecGrp \
+            --description "Security Group for public instances" \
+            --vpc-id "$VPC_ID" \
+            --output text)
+
+# Add Name tag to security group
+aws ec2 create-tags \
+  --resources $SecGrpID \
+  --tags "Key=Name,Value=$SEC_NAME" \
+  --region $REGION
+echo "  SEC ID '$SecGrpID' NAMED as '$SEC_NAME'."
+
+#inbond rule port 22 add to security group
+aws ec2 authorize-security-group-ingress \
+  --group-id $SecGrpID \
+  --protocol "tcp" \
+  --port 22 \
+  --cidr "0.0.0.0/0"
+  echo "  port 22 to '0.0.0.0/0'  ADDED to" \
+      "Security Group ID '$SecGrpID'."
+
+
+#inbond rule port 8080 add to security group
+aws ec2 authorize-security-group-ingress \
+    --group-id  $SecGrpID \
+    --protocol "tcp" \
+    --port 8080 \
+    --cidr "0.0.0.0/0"
+     echo "  port 8080 to '0.0.0.0/0'  ADDED to" \
+      "Security Group ID '$SecGrpID'."
+
+#INSTANCE CREATION  
+# ==================
+EC2_ID=$(aws ec2 run-instances \
+  --image-id $IMAGE_ID \
+  --count 1 \
+  --security-group-ids $SecGrpID \
+  --subnet-id $ SUBNET_PUBLIC_ID  \
+  --instance-type $TYPE \
+  --key-name $KEY_NAME \
+  --associate-public-ip-address \
+  --query 'Instances[0].{InstanceId:InstanceId}')
+  echo "  EC2 ID '$EC2_ID' CREATED in '$REGION' region."
+
+# Add Name tag to EC2
+aws ec2 create-tags \
+  --resources $EC2_ID \
+  --tags "Key=Name,Value=$INSTANCE_NAME" \
+  --region $REGION
+echo "  EC2 ID '$EC2_ID' NAMED as '$INSTANCE_NAME'." 
       
