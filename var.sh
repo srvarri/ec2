@@ -171,4 +171,8 @@ aws ec2 create-tags \
   --tags "Key=Name,Value=$INSTANCE_NAME" \
   --region $AWS_REGION
 echo "  EC2 ID '$EC2_ID' NAMED as '$INSTANCE_NAME'."
-      
+aws ec2 create-tags \
+  --resources $EC2_ID \
+  --tags "Key=Name,Value=$INSTANCE_NAME" \
+  --region $AWS_REGION
+echo "  EC2 ID '$EC2_ID' NAMED as '$INSTANCE_NAME'."       
