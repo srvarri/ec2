@@ -121,13 +121,13 @@ echo "  Public Subnet ID '$SUBNET_PUBLIC_ID' ASSOCIATED with Route Table ID" \
 SecGrpID=$(aws ec2 create-security-group --group-name PubSecGrp \
             --description "Security Group for public instances" \
             --vpc-id "$VPC_ID" \
-            --output text)
+            --region $AWS_REGION)
 
 # Add Name tag to security group
 aws ec2 create-tags \
   --resources $SecGrpID \
   --tags "Key=Name,Value=$SEC_NAME" \
-  --region $REGION
+  --region $AWS_REGION
 echo "  SEC ID '$SecGrpID' NAMED as '$SEC_NAME'."
 
 #inbond rule port 22 add to security group
@@ -136,6 +136,7 @@ aws ec2 authorize-security-group-ingress \
   --protocol "tcp" \
   --port 22 \
   --cidr "0.0.0.0/0"
+  --region $AWS_REGION
   echo "  port 22 to '0.0.0.0/0'  ADDED to" \
       "Security Group ID '$SecGrpID'."
 
@@ -146,6 +147,7 @@ aws ec2 authorize-security-group-ingress \
     --protocol "tcp" \
     --port 8080 \
     --cidr "0.0.0.0/0"
+    --region $AWS_REGION
      echo "  port 8080 to '0.0.0.0/0'  ADDED to" \
       "Security Group ID '$SecGrpID'."
 
@@ -160,7 +162,7 @@ EC2_ID=$(aws ec2 run-instances \
   --key-name $KEY_NAME \
   --associate-public-ip-address \
   --query 'Instances[0].{InstanceId:InstanceId}')
-  echo "  EC2 ID '$EC2_ID' CREATED in '$REGION' region."
+  echo "  EC2 ID '$EC2_ID' CREATED in '$AWS_REGION' region."
 
 # Add Name tag to EC2
 aws ec2 create-tags \
