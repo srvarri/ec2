@@ -1,4 +1,5 @@
 #!/bin/bash
+# /c/tmp/awsec2/ec2
 #aws cli create vpc with subnets github
 #******************************************************************************
 #    AWS VPC Creation Shell Script
