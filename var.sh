@@ -156,6 +156,8 @@ aws ec2 authorize-security-group-ingress \
 EC2_ID=$(aws ec2 run-instances \
   --image-id $IMAGE_ID \
   --count 1 \
+  --SUBNET_PUBLIC_AZ \
+  --security-group-ids $SecGrpID \
   --instance-type $TYPE \
   --key-name $KEY_NAME \
   --associate-public-ip-address \
