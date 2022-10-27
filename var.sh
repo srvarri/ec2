@@ -21,7 +21,7 @@ INSTANCE_NAME="myinstance"
 IMAGE_ID="ami-02ea247e531eb3ce6"
 TYPE="t2.micro"
 KEY_NAME="id_rsa"
-CHECK_FREQUENCY=5
+CHECK_FREQUENCY=5 
 #==============================================================================
 #   DO NOT MODIFY CODE BELOW
 #==============================================================================
@@ -122,8 +122,9 @@ echo "  Public Subnet ID '$SUBNET_PUBLIC_ID' ASSOCIATED with Route Table ID" \
 SecGrpID=$(aws ec2 create-security-group --group-name PubSecGrp \
             --description "Security Group for public instances" \
             --vpc-id "$VPC_ID" \
-            --region $AWS_REGION)
-
+            --output text)
+            
+#SEC_NAME="mysec"
 # Add Name tag to security group
 aws ec2 create-tags \
   --resources $SecGrpID \
@@ -147,9 +148,8 @@ aws ec2 authorize-security-group-ingress \
     --group-id  $SecGrpID \
     --protocol "tcp" \
     --port 8080 \
-    --cidr "0.0.0.0/0"
-    --region $AWS_REGION
-     echo "  port 8080 to '0.0.0.0/0'  ADDED to" \
+    --cidr "0.0.0.0/0" 
+    echo "  port 8080 to '0.0.0.0/0'  ADDED to" \
       "Security Group ID '$SecGrpID'."
 
 #INSTANCE CREATION  
@@ -175,4 +175,4 @@ aws ec2 create-tags \
   --resources $EC2_ID \
   --tags "Key=Name,Value=$INSTANCE_NAME" \
   --region $AWS_REGION
-echo "  EC2 ID '$EC2_ID' NAMED as '$INSTANCE_NAME'."       
+echo "  EC2 ID '$EC2_ID' NAMED as '$INSTANCE_NAME'."      
